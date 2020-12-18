@@ -4,13 +4,15 @@
       <div class="item">
         <svg-icon class="icon" :icon-class="e.icon" />
         <div class="name no-select">{{ e.name }}</div>
-        <div class="flex-space"></div>
-        <svg-icon :class="e.isFold ? 'arrow' : 'arrow arrow-rotate'" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" v-if="e.subMenu.length > 0" />
+        <div v-if="e.subMenu.length > 0" class="flex-space"></div>
+        <svg-icon v-if="e.subMenu.length > 0" :class="e.isFold ? 'arrow' : 'arrow arrow-rotate'" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" />
       </div>
       <div class="sub-menu" v-if="!e.isFold">
         <div class="item" v-for="(e, i) in e.subMenu" :key="i">
           <svg-icon class="icon" :icon-class="e.icon" />
           <div class="name no-select">{{ e.name }}</div>
+          <div v-if="e.subMenu.length > 0" class="flex-space"></div>
+          <svg-icon v-if="e.subMenu.length > 0" class="arrow" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" />
         </div>
       </div>
     </div>
@@ -64,13 +66,13 @@
       .name {
         font-size: 14px;
         color: #ffffff;
+        margin-right: 15px;
       }
       .flex-space {
         flex: 1;
       }
       .arrow {
         color: #ffffff;
-        margin-left: 15px;
         margin-right: 15px;
       }
       .arrow-rotate {
@@ -97,6 +99,14 @@
           font-size: 14px;
           color: #ffffff;
           margin-right: 15px;
+        }
+        .flex-space {
+          flex: 1;
+        }
+        .arrow {
+          color: #ffffff;
+          margin-right: 15px;
+          transform:rotate(-90deg);
         }
       }
       .item:hover {
