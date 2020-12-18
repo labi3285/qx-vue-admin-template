@@ -57,10 +57,11 @@
       flex-wrap: nowrap;
       justify-content: flex-start;
       align-items: center;
-      height: 50px;
+      padding-top: 15px;
+      padding-bottom: 15px;
       .icon {
         color: #ffffff;
-        margin-left: 15pt;
+        margin-left: 15px;
         margin-right: 15px;
       }
       .name {
@@ -84,12 +85,13 @@
     }
     .sub-menu {
       .item {
+        padding-top: 15px;
+        padding-bottom: 15px;
         background-color: #222d3c;
         display: flex;
         flex-wrap: nowrap;
         justify-content: flex-start;
         align-items: center;
-        height: 50px;
         .icon {
           color: #ffffff;
           margin-left: 25pt;
