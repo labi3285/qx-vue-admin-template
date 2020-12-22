@@ -48,10 +48,47 @@ class MenuM extends VuexModule {
   @Action({ commit: "updateMenus", rawError: true })
   public async fetchMenus() {
     const arr: Menu[] = [];
-    for (const e of menu) {
+
+    const arr1: any[] = [];
+    for (let i = 0; i < 10; i ++) {
+      const arr2: any[] = [];
+      for (let j = 0; j < 10; j ++) {
+        const arr3: any[] = [];
+        for (let k = 0; k < 10; k ++) {
+          const arr4: any[] = [];
+          for (let l = 0; l < 10; l ++) {
+            arr4.push({
+              icon: 'gift',
+              name: '菜单-' + i + "-" + j + "-" + k + "-" + l,
+              path: 'path' + i + "-" + j + "-" + k + "-" + l,
+              subMenu: [],
+            });
+          }
+          arr3.push({
+            icon: 'gift',
+            name: '菜单-' + i + "-" + j + "-" + k,
+            path: 'path' + i + "-" + j + "-" + k,
+            subMenu: arr4,
+          });
+        }
+        arr2.push({
+          icon: 'gift',
+          name: '菜单-' + i + "-" + j,
+          path: 'path' + i + "-" + j,
+          subMenu: arr3,
+        });
+      }
+      arr1.push({
+        icon: 'gift',
+        name: '菜单-' + i,
+        path: 'path' + i,
+        subMenu: arr2,
+      });
+    }
+
+    for (const e of arr1) {
       arr.push(CreateMenu(e));
     }
-    console.log(arr);
     return arr;
   }
   @Action({ commit: "updateIsSideMenuFold", rawError: true })

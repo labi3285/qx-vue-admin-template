@@ -1,19 +1,12 @@
 <template>
-  <div class="side-menu" :style="{ width: menuWidth }">
-    <div class="menu" v-for="(e, i) in menu" :key="i" @click="clickMenu(e)">
-      <div class="item">
-        <svg-icon class="icon" :icon-class="e.icon" />
-        <div class="name no-select">{{ e.name }}</div>
-        <div v-if="e.subMenu.length > 0" class="flex-space"></div>
-        <svg-icon v-if="e.subMenu.length > 0" :class="e.isFold ? 'arrow' : 'arrow arrow-rotate'" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" />
-      </div>
+  <div class="side-menu" :style="{ width }">
+    <div class="menu" v-for="(e, i) in menu" :key="i">
+      <SideMenuItem :menu="e" @click.native.stop="clickMenu(i, e)"/>
       <div class="sub-menu" v-if="!e.isFold">
-        <div class="item" v-for="(e, i) in e.subMenu" :key="i">
-          <svg-icon class="icon" :icon-class="e.icon" />
-          <div class="name no-select">{{ e.name }}</div>
-          <div v-if="e.subMenu.length > 0" class="flex-space"></div>
-          <svg-icon v-if="e.subMenu.length > 0" class="arrow" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" />
-        </div>
+        <SideMenuSubItem v-for="(e, j) in e.subMenu" :key="i + '-' + j" :menu="e" 
+          :index="{ idx0: i, idx1: j }"
+          :isSelect="i == menuSelectIndex.idx0 && j == menuSelectIndex.idx1" 
+          :onSelect="onSubMenuSelect"/>
       </div>
     </div>
   </div>
@@ -22,99 +15,81 @@
 <script lang="ts">
   import Vue from 'vue'
   import Component from 'vue-class-component';
+  import SideMenuItem from './SideMenuItem.vue';
+  import SideMenuSubItem from './SideMenuSubItem.vue';
+  import SideMenuPopup from './SideMenuPopup.vue';
 
   import { Menu, MenuModule } from "@/store/modules/MenuModule";
 
   @Component({
     name: "SideMenu",
+    components: {
+      SideMenuItem,
+      SideMenuSubItem,
+      SideMenuPopup,
+    },
   })
   export default class SideMenu extends Vue {
+    private menuSelectIndex: { idx0: number, idx1: number } = { idx0: -1, idx1: -1 } 
     private get menu() {
       return MenuModule.getSideMenu;
     }
-    private get menuWidth() {
+    private get width() {
       return MenuModule.getIsSideMenuFold ? '40px' : '200px';
     }
     private async mounted() {
       await MenuModule.fetchMenus();
     }
-    private clickMenu(e: Menu) {
+    private clickMenu(i: number, e: Menu) {
       e.isFold = !e.isFold;
       MenuModule.asycMenu();
+      this.cleanPopup();
+    }
+    private onSubMenuSelect(e: Menu, index: { idx0: number, idx1: number }, origin: { x: number, y: number, h: number }) {
+      this.cleanPopup();
+      this.menuSelectIndex = index;
+      Vue.component('SideMenuPopup', SideMenuPopup);
+      const vm = new Vue({
+        render: h => h('SideMenuPopup', { 
+            props: {
+              menus: e.subMenu,
+              x: origin.x,
+              y: origin.y + origin.h / 2,
+              onClickoutside: () => {
+                this.cleanPopup();
+                this.menuSelectIndex = { idx0: -1, idx1: -1 };
+              }
+            }
+          })
+      }).$mount();
+      document.body.appendChild(vm.$el);
+      this.popup = vm;
+    }
+    private cleanPopup() {
+      if (this.popup !== null) {
+        document.body.removeChild(this.popup.$el);
+        this.popup.$children[0].$destroy();
+        this.popup.$destroy();
+        this.popup = null;
+      }
+    }
+    private popup: Vue | null = null;
+
+    private beforeDestroy() {
+      this.cleanPopup();
     }
   }
 </script>
 
 <style lang="stylus" scoped>
 .side-menu {
-  cursor: pointer;
+  // overflow: scroll;
   background-color: #222d3c;
   width: 100%;
   .menu {
-    .item {
-      background-color: #334154;
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      padding-top: 15px;
-      padding-bottom: 15px;
-      .icon {
-        color: #ffffff;
-        margin-left: 15px;
-        margin-right: 15px;
-      }
-      .name {
-        font-size: 14px;
-        color: #ffffff;
-        margin-right: 15px;
-      }
-      .flex-space {
-        flex: 1;
-      }
-      .arrow {
-        color: #ffffff;
-        margin-right: 15px;
-      }
-      .arrow-rotate {
-        transform:rotate(180deg);
-      }
-    }
-    .item:hover {
-      background-color: #293444;
-    }
-    .sub-menu {
-      .item {
-        padding-top: 15px;
-        padding-bottom: 15px;
-        background-color: #222d3c;
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-items: center;
-        .icon {
-          color: #ffffff;
-          margin-left: 25pt;
-          margin-right: 15px;
-        }
-        .name {
-          font-size: 14px;
-          color: #ffffff;
-          margin-right: 15px;
-        }
-        .flex-space {
-          flex: 1;
-        }
-        .arrow {
-          color: #ffffff;
-          margin-right: 15px;
-          transform:rotate(-90deg);
-        }
-      }
-      .item:hover {
-        background-color: #041527;
-      }
-    }
+  }
+  .sub-menu {
+    overflow: hidden;
   }
   .no-select {
     -webkit-touch-callout: none;

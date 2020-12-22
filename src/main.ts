@@ -8,6 +8,11 @@ Vue.config.productionTip = false
 
 import './assets/svg' // icon
 
+// import SideMenuPopup from '@/views/Home/Comps/SideMenuPopup.vue';
+
+// Vue.component('SideMenuPopup', SideMenuPopup);
+
+
 new Vue({
   router,
   store,
