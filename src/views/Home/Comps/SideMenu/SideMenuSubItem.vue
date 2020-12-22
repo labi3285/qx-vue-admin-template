@@ -1,5 +1,5 @@
 <template>
-  <div class="side-menu-sub-item" :class="isSelect ? 'side-menu-sub-item-select' : ''" @click.stop="onClick" @mouseenter="onClick" @mouseleave="onCancel">
+  <div class="side-menu-sub-item" :class="isSelect ? 'side-menu-sub-item-select' : ''" @click.stop="handleSelect" @mouseenter.stop="handleSelect">
     <svg-icon class="icon" :icon-class="menu.icon" />
     <div class="name no-select">{{ menu.name }}</div>
     <div v-if="menu.subMenu.length > 0" class="flex-space"></div>
@@ -19,18 +19,20 @@
     @Prop() public index!: { idx0: number, idx1: number };
     @Prop({ default: false, }) public isSelect!: boolean;
     @Prop() public onSelect!: (menu: Menu, index: { idx0: number, idx1: number }, origin: { x: number, y: number, h: number }) => {};
+    @Prop() public onCancel!: () => {};
+
     private get isSideMenuFold() {
       return MenuModule.getIsSideMenuFold;
     }
-    private onClick() {
+    private handleSelect() {
       if (this.onSelect !== null) {
         const el = this.$el as HTMLElement;
-　　　　  var y = el.offsetTop;
-　　　　  var next = el.offsetParent as HTMLElement;
-　　　　  while (next !== null){
-　　　　　　  y += next.offsetTop;
-　　　　　　  next = next.offsetParent as HTMLElement;
-　　　　  }
+        var y = el.offsetTop;
+        var next = el.offsetParent as HTMLElement;
+        while (next !== null) {
+          y += next.offsetTop;
+          next = next.offsetParent as HTMLElement;
+          }
         const x = el.getBoundingClientRect().width;
         const h = el.getBoundingClientRect().height;
         this.onSelect(this.menu, this.index, { x, y, h });

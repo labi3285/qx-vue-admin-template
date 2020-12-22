@@ -1,5 +1,5 @@
 <template>
-  <div class="side-menu-popup-item" :class="isSelect ? 'side-menu-popup-item-select' : ''" @click.stop="onClick" @mouseenter="onClick">
+  <div class="side-menu-popup-item" :class="isSelect ? 'side-menu-popup-item-select' : ''" @click.stop="handleSelect" @mouseenter.stop="handleSelect">
     <svg-icon class="icon" :icon-class="menu.icon" />
     <div class="name no-select">{{ menu.name }}</div>
     <div v-if="menu.subMenu.length > 0" class="flex-space"></div>
@@ -23,15 +23,15 @@
     @Prop() public index!: number;
     @Prop({ default: false, }) public isSelect!: boolean;
     @Prop() public onSelect!: (menu: Menu, index: number, origin: { x: number, y: number, h: number }) => {};
-    private onClick() {
+    private handleSelect() {
       if (this.onSelect !== null) {
         const el = this.$el as HTMLElement;
-　　　　  var y = el.offsetTop;
-　　　　  var next = el.offsetParent as HTMLElement;
-　　　　  while (next !== null){
-　　　　　　  y += next.offsetTop;
-　　　　　　  next = next.offsetParent as HTMLElement;
-　　　　  }
+        var y = el.offsetTop;
+        var next = el.offsetParent as HTMLElement;
+        while (next !== null) {
+          y += next.offsetTop;
+          next = next.offsetParent as HTMLElement;
+          }
         const x = el.getBoundingClientRect().left + el.getBoundingClientRect().width;
         const h = el.getBoundingClientRect().height;
         this.onSelect(this.menu, this.index, { x, y, h });

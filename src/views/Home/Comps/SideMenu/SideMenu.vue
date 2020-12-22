@@ -6,7 +6,9 @@
         <SideMenuSubItem v-for="(e, j) in e.subMenu" :key="i + '-' + j" :menu="e" 
           :index="{ idx0: i, idx1: j }"
           :isSelect="i == menuSelectIndex.idx0 && j == menuSelectIndex.idx1" 
-          :onSelect="onSubMenuSelect"/>
+          :onSelect="onSubMenuSelect"
+          :onCancel="onSubMenuCancel"
+          />
       </div>
     </div>
   </div>
@@ -64,6 +66,9 @@
       }).$mount();
       document.body.appendChild(vm.$el);
       this.popup = vm;
+    }
+    private onSubMenuCancel() {
+      this.cleanPopup();
     }
     private cleanPopup() {
       if (this.popup !== null) {
