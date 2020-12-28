@@ -1,60 +1,65 @@
 <template>
   <div class="home">
-
-    <div class="top"></div>
-    <SideMenu class="sidebar" />
-    <div class="content">
-
-      {{ $store.getters.userName }}
-
+    <HomeHeader class="header" />
+    <div class="body">
+      <SideMenu class="side-menu" />
+      <HomeContent class="content">
+        123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345451234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345
+      </HomeContent>
     </div>
-    
+    <HomeFooter />
   </div>
 </template>
 
 <script lang="ts">
   import { Vue, Component, Prop } from "vue-property-decorator";
 
+  import HomeHeader from "./Comps/HomeHeader.vue";
   import SideMenu from "./Comps/SideMenu/SideMenu.vue";
+  import HomeContent from "./Comps/HomeContent.vue";
+  import HomeFooter from "./Comps/HomeFooter.vue";
 
   import { AccountModule } from "@/store/modules/AccountModule";
+  import { MenuModule } from "@/store/modules/MenuModule";
 
   @Component({
     name: "Home",
     components: { 
-      SideMenu
+      HomeHeader,
+      SideMenu,
+      HomeContent,
+      HomeFooter,
     },
   })
   export default class Home extends Vue {
 
     private async mounted() {
       await AccountModule.login();
-
       // console.warn(process.env)
-
     }
-    // private get name(): string {
-    //   return AccountModule.getAccount.user?.name ?? '';
-    // }
-
   }
 </script>
 
 <style lang="stylus" scoped>
-.top {
-    position: absolute;
-    left: 0; right: 0;
-    height: 44px;
-    background-color: blue;
-}
-.sidebar {
-    position: absolute;
-    left: 0; top: 44px; bottom: 0;
-    z-index: 999;
-}
-.content {
-    position: absolute;
-    background-color: white;
-    left:200px; top: 72px; right: 0; bottom: 0;
-}
+  .home {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    .header {
+      width: 100vw;
+    }
+    .body {
+      width: 100vw;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      .side-menu {
+
+      }
+      .content {
+        flex: 1;
+        width: 0;
+      }
+    }
+  }
 </style>

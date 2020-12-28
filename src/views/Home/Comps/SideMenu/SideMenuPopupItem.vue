@@ -1,9 +1,9 @@
 <template>
-  <div class="side-menu-popup-item" :class="isSelect ? 'side-menu-popup-item-select' : ''" @click.stop="handleSelect" @mouseenter.stop="handleSelect">
+  <div class="side-menu-popup-item" :class="isSelect ? 'side-menu-popup-item-select' : ''" @click="handleSelect" @mouseenter="handleSelect">
     <svg-icon class="icon" :icon-class="menu.icon" />
     <div class="name no-select">{{ menu.name }}</div>
     <div v-if="menu.subMenu.length > 0" class="flex-space"></div>
-    <svg-icon v-if="menu.subMenu.length > 0" class="arrow" icon-class="arrow_down" iconWidth="10px" iconHeight="10px" />
+    <svg-icon v-if="menu.subMenu.length > 0" class="arrow" icon-class="arrow-down" iconWidth="10px" iconHeight="10px" />
   </div>
 </template>
 

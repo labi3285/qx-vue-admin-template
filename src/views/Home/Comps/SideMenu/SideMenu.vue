@@ -1,13 +1,15 @@
 <template>
   <div class="side-menu" :style="{ width }">
     <div class="menu" v-for="(e, i) in menu" :key="i">
-      <SideMenuItem :menu="e" @click.native.stop="clickMenu(i, e)"/>
+      <SideMenuItem :menu="e" :onFoldChange="cleanPopup"
+        :index="i"
+        :onSelect="handleMenuSelect"
+        />
       <div class="sub-menu" v-if="!e.isFold">
         <SideMenuSubItem v-for="(e, j) in e.subMenu" :key="i + '-' + j" :menu="e" 
           :index="{ idx0: i, idx1: j }"
-          :isSelect="i == menuSelectIndex.idx0 && j == menuSelectIndex.idx1" 
-          :onSelect="onSubMenuSelect"
-          :onCancel="onSubMenuCancel"
+          :isSelect="i == menuSubSelectIndexs.idx0 && j == menuSubSelectIndexs.idx1" 
+          :onSelect="handleSubMenuSelect"
           />
       </div>
     </div>
@@ -32,22 +34,18 @@
     },
   })
   export default class SideMenu extends Vue {
-    private menuSelectIndex: { idx0: number, idx1: number } = { idx0: -1, idx1: -1 } 
+    private menuSelectIndex: number = -1;
+    private menuSubSelectIndexs: { idx0: number, idx1: number } = { idx0: -1, idx1: -1 } 
     private get menu() {
       return MenuModule.getSideMenu;
     }
     private get width() {
-      return MenuModule.getIsSideMenuFold ? '40px' : '200px';
+      return MenuModule.getIsSideMenuFold ? '44px' : '200px';
     }
     private async mounted() {
       await MenuModule.fetchMenus();
     }
-    private clickMenu(i: number, e: Menu) {
-      e.isFold = !e.isFold;
-      MenuModule.asycMenu();
-      this.cleanPopup();
-    }
-    private onSubMenuSelect(e: Menu, index: { idx0: number, idx1: number }, origin: { x: number, y: number, h: number }) {
+    private handleMenuSelect(e: Menu, index: number, origin: { x: number, y: number, h: number }) {
       this.cleanPopup();
       this.menuSelectIndex = index;
       Vue.component('SideMenuPopup', SideMenuPopup);
@@ -59,7 +57,7 @@
               y: origin.y + origin.h / 2,
               onClickoutside: () => {
                 this.cleanPopup();
-                this.menuSelectIndex = { idx0: -1, idx1: -1 };
+                this.menuSelectIndex = -1;
               }
             }
           })
@@ -67,8 +65,25 @@
       document.body.appendChild(vm.$el);
       this.popup = vm;
     }
-    private onSubMenuCancel() {
+    private handleSubMenuSelect(e: Menu, index: { idx0: number, idx1: number }, origin: { x: number, y: number, h: number }) {
       this.cleanPopup();
+      this.menuSubSelectIndexs = index;
+      Vue.component('SideMenuPopup', SideMenuPopup);
+      const vm = new Vue({
+        render: h => h('SideMenuPopup', { 
+            props: {
+              menus: e.subMenu,
+              x: origin.x,
+              y: origin.y + origin.h / 2,
+              onClickoutside: () => {
+                this.cleanPopup();
+                this.menuSubSelectIndexs = { idx0: -1, idx1: -1 };
+              }
+            }
+          })
+      }).$mount();
+      document.body.appendChild(vm.$el);
+      this.popup = vm;
     }
     private cleanPopup() {
       if (this.popup !== null) {
@@ -88,9 +103,8 @@
 
 <style lang="stylus" scoped>
 .side-menu {
-  // overflow: scroll;
+  overflow: hidden;
   background-color: #222d3c;
-  width: 100%;
   .menu {
   }
   .sub-menu {

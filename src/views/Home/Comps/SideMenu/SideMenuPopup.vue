@@ -37,6 +37,8 @@
     private isGetReady: boolean = false;
 
     private get left() {
+      
+
       return this.x + "px";
     }
     private get top() {
